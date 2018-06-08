@@ -3,16 +3,18 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.canvas.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <AnchorPane fx:id="Menu" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControllerMenu">
    <children>
       <Canvas fx:id="canvas" height="540.0" width="960.0" />
-      <AnchorPane fx:id="GUIAnchor" layoutX="10.0" layoutY="359.0" maxHeight="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="112.0" prefWidth="960.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <Label fx:id="PlayingLabel" layoutX="5.0" layoutY="419.0"  prefHeight="17.0" prefWidth="960.0" textFill="WHITE">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <AnchorPane fx:id="GUIAnchor" layoutX="10.0" layoutY="359.0" maxHeight="-Infinity" minHeight="0.0" minWidth="0.0" onMouseEntered="#GUIAnchorEnterAction" onMouseExited="#GUIAnchorExitAction" prefHeight="99.0" prefWidth="960.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
             <Pane layoutX="-2.0" layoutY="-1.0" prefHeight="108.0" prefWidth="316.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
@@ -25,22 +27,13 @@
             </Pane>
             <Pane layoutX="564.0" layoutY="-1.0" prefHeight="83.0" prefWidth="200.0" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Slider fx:id="VolumeSlider" layoutX="66.0" layoutY="45.0" prefHeight="14.0" prefWidth="120.0" />
-                  <ImageView fx:id="VolumeImage" fitHeight="25.0" fitWidth="25.0" layoutX="27.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../resources/volume.png" />
-                     </image>
-                  </ImageView>
+                  <Slider fx:id="VolumeSlider" layoutX="66.0" layoutY="45.0" max="1.0" prefHeight="14.0" prefWidth="120.0" value="0.5" />
+                  <ImageView fx:id="VolumeImage" fitHeight="25.0" fitWidth="25.0" layoutX="27.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true" style="-fx-image: url(&quot;..\..\resources\volume.png&quot;);" />
                </children>
             </Pane>
             <Slider fx:id="PlayedSlider" layoutX="43.0" layoutY="7.0" prefHeight="14.0" prefWidth="695.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="7.0" />
             <Text fx:id="PlayedText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="00:00" wrappingWidth="33.0" x="10.0" y="20.0" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="6.0" />
             <Text fx:id="DurationText" fill="WHITE" layoutX="914.0" layoutY="-1.05078125" strokeType="OUTSIDE" strokeWidth="0.0" text="00:00" wrappingWidth="33.0" x="10.0" y="20.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="6.0" />
-            <Text fx:id="PlayingText" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="960.0" x="10.0" y="-10.0">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Text>
          </children>
       </AnchorPane>
       <Button fx:id="NextVisualButton" layoutX="908.0" layoutY="-1.0" mnemonicParsing="false" onAction="#NextVisualButtonAction" style="-fx-background-color: gray;" text="next" textFill="WHITE" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="-2.0" />
