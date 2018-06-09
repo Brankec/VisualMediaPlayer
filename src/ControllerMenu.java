@@ -1,12 +1,11 @@
-import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -14,6 +13,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.util.List;
 
 public class ControllerMenu {
     public Button BackButton, PlayButton, NextButton, RepeatButton, OpenButton;
@@ -28,11 +28,12 @@ public class ControllerMenu {
 
     private MediaPlayer player;
     private Media audio;
-    private File file;
+    private List<File> fileList;
     private final FileChooser fileChooser = new FileChooser();
 
+    private int currentSong = 0;
     public GraphicsContext gc;
-    private boolean playing = true;
+    private boolean playing = false;
 
     public void initialize() {
         draw = new Draw();
@@ -73,36 +74,49 @@ public class ControllerMenu {
     }
 
     public void BackButtonAction() {
-        //Currently unused
+        if(player != null && currentSong > 0) {
+            player.stop();
+            currentSong--;
+            audio = new Media(fileList.get(currentSong).toURI().toASCIIString());
+            player = new MediaPlayer(audio);
+
+            player.play();
+            playing = true;
+            PlayingLabel.setText(fileList.get(currentSong).getName());
+            PlayButton.setText("Stop");
+
+            playVisual();
+        }
     }
     public void PlayButtonAction() {
-        if(player != null) {//creating a toggle play button
-            if (playing) {
+        if(player != null) {//a toggle play button
+            if (!playing) {
                 player.play();
-                playing = false;
+                playing = true;
                 PlayButton.setText("Stop");
             } else {
                 player.pause();
-                playing = true;
+                playing = false;
                 PlayButton.setText("Play");
             }
         }
-        if(player != null) {
-            draw.Audio(gc, player);
-            PlayingLabel.setText(file.getName());
 
-            player.setOnEndOfMedia(new Runnable() {
-                @Override
-                public void run() {
-                    player.stop();
-                    playing = true;
-                    PlayButton.setText("Play");
-                }
-            });
-        }
+        playVisual();
     }
     public void NextButtonAction() {
-        //Currently unused
+        if(player != null && currentSong < fileList.size()) {
+            player.stop();
+            currentSong++;
+            audio = new Media(fileList.get(currentSong).toURI().toASCIIString());
+            player = new MediaPlayer(audio);
+
+            player.play();
+            playing = true;
+            PlayingLabel.setText(fileList.get(currentSong).getName());
+            PlayButton.setText("Stop");
+
+            playVisual();
+        }
     }
     public void RepeatButtonAction() {
         /*if(player != null) { not working properly yet. Reason: unknown.
@@ -116,26 +130,48 @@ public class ControllerMenu {
     public void OpenButtonAction() {
         MediaPlayer oldPlayer = player;
         configureFileChooser(fileChooser);
-        file = fileChooser.showOpenDialog(Globals.primaryStage);
+        //file = fileChooser.showOpenDialog(Globals.primaryStage);
+        fileList = fileChooser.showOpenMultipleDialog(Globals.primaryStage);
 
-        if (file.toURI() != null) {
-            audio = new Media(file.toURI().toASCIIString());
-            player = new MediaPlayer(audio);
-            player.setVolume(0.5);//it's set to 1.0 by default which is the max
-            VolumeSlider.setValue(player.getVolume());//the range for the slider was set from 0 to 1 just like the volume
+        if(fileList != null) {
+            if (fileList.get(currentSong).toURI() != null) {
+                audio = new Media(fileList.get(currentSong).toURI().toASCIIString());
 
-            VolumeSlider.valueProperty().addListener(new ChangeListener<Number>() { //A slider listener for the Volume slider
-                public void changed(ObservableValue<? extends Number> ov,
-                                    Number old_val, Number new_val) {
-                    player.setVolume(VolumeSlider.getValue());
+                if (player != oldPlayer && oldPlayer != null) {
+                    player.stop();
                 }
-            });
-        }
-        if(player != oldPlayer && oldPlayer != null) {
-            player.stop();
+
+                player = new MediaPlayer(audio);
+                PlayingLabel.setText(fileList.get(currentSong).getName());
+
+                player.setVolume(0.5);//it's set to 1.0 by default which is the max
+                VolumeSlider.setValue(player.getVolume());//the range for the slider was set from 0 to 1 just like the volume
+
+                VolumeSlider.valueProperty().addListener(new ChangeListener<Number>() { //A slider listener for the Volume slider
+                    public void changed(ObservableValue<? extends Number> ov,
+                                        Number old_val, Number new_val) {
+                        player.setVolume(VolumeSlider.getValue());
+                    }
+                });
+            }
         }
     }
 
+    private void playVisual() {//currently the slider controls are in Draw class
+        if(player != null) {
+            draw.Audio(gc, player);
+            PlayingLabel.setText(fileList.get(currentSong).getName());
+
+            player.setOnEndOfMedia(new Runnable() {
+                @Override
+                public void run() {
+                    player.stop();
+                    playing = false;
+                    PlayButton.setText("Play");
+                }
+            });
+        }
+    }
 
     private static void configureFileChooser(
             final FileChooser fileChooser) {
