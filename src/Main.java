@@ -18,6 +18,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
         Globals.primaryStage = primaryStage;
         Globals.primaryStage.setTitle("VMP");
+        Globals.primaryStage.setResizable(false);
         Parent fxml = FXMLLoader.load(getClass().getResource("FXML/Menu.fxml"));
 
         Scene scene = new Scene(fxml, 1920/2, 1080/1.8);

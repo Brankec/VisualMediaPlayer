@@ -124,6 +124,7 @@ public class ControllerMenu {
         }
     }
     public void OpenButtonAction() {
+        List<File> fileListOld = fileList;
         configureFileChooser(fileChooser);
         fileList = fileChooser.showOpenMultipleDialog(Globals.primaryStage); //Opening file explorer and saving all selected the files in here
 
@@ -160,6 +161,8 @@ public class ControllerMenu {
                     }
                 });
             }
+        } else {
+            fileList = fileListOld;
         }
     }
     public void ListViewButtonAction() {
@@ -177,23 +180,25 @@ public class ControllerMenu {
         }
     }
     public void MusicListViewClickAction() {
-        player.stop();
-        currentSong = MusicListView.getSelectionModel().getSelectedIndex(); //gets the index from the cell you clicked on
-
-        audio = new Media(fileList.get(currentSong).toURI().toASCIIString());
-        if (isPlaying) { //this stops a song that is already playing if opening a new set of songs
+        if (fileList != null) {
             player.stop();
-            isPlaying = false;
-            PlayButton.setText("Play");
+            currentSong = MusicListView.getSelectionModel().getSelectedIndex(); //gets the index from the cell you clicked on
+
+            audio = new Media(fileList.get(currentSong).toURI().toASCIIString());
+            if (isPlaying) { //this stops a song that is already playing if opening a new set of songs
+                player.stop();
+                isPlaying = false;
+                PlayButton.setText("Play");
+            }
+            player = new MediaPlayer(audio);
+            PlayingLabel.setText(fileList.get(currentSong).getName());
+
+
+            player.play();
+            playVisual();
+            isPlaying = true;
+            PlayButton.setText("Stop");
         }
-        player = new MediaPlayer(audio);
-        PlayingLabel.setText(fileList.get(currentSong).getName());
-
-
-        player.play();
-        playVisual();
-        isPlaying = true;
-        PlayButton.setText("Stop");
     }
 
     private void playVisual() {//currently the slider controls are in Draw class
@@ -206,11 +211,7 @@ public class ControllerMenu {
                 public void run() {
                     isPlaying = false;
                     PlayButton.setText("Play");
-                    if(currentSong > Globals.MusicList) {
-                        NextButtonAction();
-                    } else {
-                        RepeatButtonAction();
-                    }
+                    NextButtonAction();
                 }
             });
         }
