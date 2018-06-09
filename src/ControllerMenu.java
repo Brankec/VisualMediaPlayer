@@ -5,6 +5,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.media.Media;
@@ -14,15 +15,17 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.util.List;
+import java.util.Spliterators;
 
 public class ControllerMenu {
     public Button BackButton, PlayButton, NextButton, RepeatButton, OpenButton;
-    public Button BackVisualButton, NextVisualButton;
+    public Button BackVisualButton, NextVisualButton, ListViewButton;
     public Text PlayedText, DurationText;
     public Label PlayingLabel;
     public Slider PlayedSlider, VolumeSlider;
+    public ListView <String> MusicListView;
     public Canvas canvas;
-    public AnchorPane GUIAnchor;
+    public AnchorPane GUIAnchor, Menu;
 
     private Draw draw;
 
@@ -33,7 +36,8 @@ public class ControllerMenu {
 
     private int currentSong = 0;
     public GraphicsContext gc;
-    private boolean playing = false;
+    private boolean isPlaying = false;
+    private boolean islistOpen = false;
 
     public void initialize() {
         draw = new Draw();
@@ -44,7 +48,6 @@ public class ControllerMenu {
         Globals.PlayedSlider = PlayedSlider;
         Globals.PlayedText = PlayedText;
         Globals.DurationText = DurationText;
-        PlayingLabel.setTranslateY(100);//it goes 100 pixels down from it's initial position
     }
     public void BackVisualButtonAction(){
         if(Globals.Selected > 0) {
@@ -52,18 +55,22 @@ public class ControllerMenu {
         }
     }
     public void NextVisualButtonAction(){
-        if(Globals.Selected < Globals.NumberOfOptions) {
+        if(Globals.Selected < Globals.VisualList - 1) {//-1 because the index starts from 0, duh.
             Globals.Selected++;
         }
     }
 
     public void GUIAnchorEnterAction() {
-        GUIAnchor.setOpacity(1);
-        PlayingLabel.setTranslateY(GUIAnchor.getTranslateY() - PlayedText.getScaleY());//positioned it so that the label sits on top of the GUI
+        if (!islistOpen) {
+            GUIAnchor.setOpacity(1);
+            PlayingLabel.setTranslateY(GUIAnchor.getTranslateY() - PlayedText.getScaleY());//positioned it so that the label sits on top of the GUI
+        }
     }
     public void GUIAnchorExitAction() {
-        GUIAnchor.setOpacity(0);
-        PlayingLabel.setTranslateY(100);//it goes 100 pixels down from it's initial position
+        if (!islistOpen) {
+            GUIAnchor.setOpacity(0);
+            PlayingLabel.setTranslateY(100);//it goes 100 pixels down from it's initial position
+        }
     }
 
     public void BackButtonAction() {
@@ -74,7 +81,7 @@ public class ControllerMenu {
             player = new MediaPlayer(audio);
 
             player.play();
-            playing = true;
+            isPlaying = true;
             PlayingLabel.setText(fileList.get(currentSong).getName());
             PlayButton.setText("Stop");
 
@@ -83,13 +90,13 @@ public class ControllerMenu {
     }
     public void PlayButtonAction() {
         if(player != null) {//a toggle play button
-            if (!playing) {
+            if (!isPlaying) {
                 player.play();
-                playing = true;
+                isPlaying = true;
                 PlayButton.setText("Stop");
             } else {
                 player.pause();
-                playing = false;
+                isPlaying = false;
                 PlayButton.setText("Play");
             }
         }
@@ -97,14 +104,14 @@ public class ControllerMenu {
         playVisual();
     }
     public void NextButtonAction() {
-        if(player != null && currentSong < fileList.size()) {
+        if(player != null && currentSong < (fileList.size() - 1)) {
             player.stop();
             currentSong++;
             audio = new Media(fileList.get(currentSong).toURI().toASCIIString());
             player = new MediaPlayer(audio);
 
             player.play();
-            playing = true;
+            isPlaying = true;
             PlayingLabel.setText(fileList.get(currentSong).getName());
             PlayButton.setText("Stop");
 
@@ -115,22 +122,25 @@ public class ControllerMenu {
         if(player != null) {
             player.stop();
             player.play();
-            playing = true;
+            isPlaying = true;
             PlayButton.setText("Stop");
         }
     }
     public void OpenButtonAction() {
         MediaPlayer oldPlayer = player;
         configureFileChooser(fileChooser);
-        //file = fileChooser.showOpenDialog(Globals.primaryStage);
         fileList = fileChooser.showOpenMultipleDialog(Globals.primaryStage); //Opening file explorer and saving all selected the files in here
+
+        Globals.MusicList = fileList.size();
 
         if(fileList != null) {
             if (fileList.get(currentSong).toURI() != null) {
                 audio = new Media(fileList.get(currentSong).toURI().toASCIIString());
 
-                if (player != oldPlayer && oldPlayer != null) {
+                if (isPlaying) {
                     player.stop();
+                    isPlaying = false;
+                    PlayingLabel.setText("Play");
                 }
 
                 player = new MediaPlayer(audio);
@@ -148,6 +158,26 @@ public class ControllerMenu {
             }
         }
     }
+    public void ListViewButtonAction() {
+        if(fileList != null) {//a toggle button
+            if (!islistOpen) {
+                GUIAnchor.setTranslateY(-(GUIAnchor.getHeight() - 300)); // the list view is under the window so I just decrease its Y value
+                PlayingLabel.setTranslateY(-200);//hacked values that I can't be bothered with to calculate properly
+
+                islistOpen = true;
+            } else {
+                GUIAnchor.setTranslateY(-(GUIAnchor.getHeight() - 500)); //returns it in its original place
+                PlayingLabel.setTranslateY(-(GUIAnchor.getHeight() - 500) - PlayedText.getScaleY());
+                islistOpen = false;
+            }
+            for(int i = 0; i < fileList.size(); i++) {
+                MusicListView.getItems().add(fileList.get(i).getName());
+            }
+        }
+    }
+    public void MusicListViewClickAction() {
+
+    }
 
     private void playVisual() {//currently the slider controls are in Draw class
         if(player != null) {
@@ -158,7 +188,7 @@ public class ControllerMenu {
                 @Override
                 public void run() {
                     player.stop();
-                    playing = false;
+                    isPlaying = false;
                     PlayButton.setText("Play");
                 }
             });

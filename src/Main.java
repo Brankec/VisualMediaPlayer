@@ -15,10 +15,11 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
         Globals.primaryStage = primaryStage;
         Globals.primaryStage.setTitle("VMP");
-        //Globals.primaryStage.setResizable(false);
         Parent fxml = FXMLLoader.load(getClass().getResource("FXML/Menu.fxml"));
 
-        Globals.primaryStage.setScene(new Scene(fxml, 1920/2, 1080/2));
+        Scene scene = new Scene(fxml, 1920/2, 1080/1.8);
+        scene.getStylesheets().addAll("CSS/Menu.css");
+        Globals.primaryStage.setScene(scene);
         Globals.primaryStage.show();
     }
 }

@@ -25,7 +25,7 @@ public class Draw {
         player.setAudioSpectrumListener(new AudioSpectrumListener() {
             @Override
             public void spectrumDataUpdate(double timestamp, double duration, float[] magnitudes, float[] phases) {
-                gc.clearRect(0, 0, 1920 / 2, 1080 / 2);
+                gc.clearRect(0, 0, Globals.canvasSizeX, Globals.canvasSizeY);
                 PlayedTime = .0;
                 PlayedTime += timestamp;
 
@@ -40,7 +40,7 @@ public class Draw {
 
                     smooth = (correctedMagnitude[i] + previousBand)/2;
 
-                    list(Globals.Selected, i, (i * width+1), 1080 / 2, width, (int)(smooth * 10));
+                    list(Globals.Selected, i, (i * width+1), Globals.canvasSizeY, width, (int)(smooth * 10));
                     previousBand = correctedMagnitude[i];
                 }
             }
@@ -69,7 +69,6 @@ public class Draw {
         Duration duration = player.getMedia().getDuration();
 
         Globals.PlayedText.setText(formatTime(currentTime));
-
         Globals.DurationText.setText(formatTime(duration));
     }
     private void list(int select, int i, int x, int y, int w, int h) {
@@ -214,8 +213,8 @@ public class Draw {
 
 
 
-    private static String formatTime(javafx.util.Duration elapsed) {
-        int intElapsed = (int)Math.floor(elapsed.toSeconds());
+    private static String formatTime(javafx.util.Duration time) {
+        int intElapsed = (int)Math.floor(time.toSeconds());
         int elapsedHours = intElapsed / (60 * 60);
         if (elapsedHours > 0) {
             intElapsed -= elapsedHours * 60 * 60;
