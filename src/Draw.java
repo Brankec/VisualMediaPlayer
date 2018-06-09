@@ -29,7 +29,6 @@ public class Draw {
                 PlayedTime = .0;
                 PlayedTime += timestamp;
 
-                //Globals.PlayedSlider.setValue((PlayedTime / player.getCycleDuration().toSeconds())*100);//played time divided by the total duration multiplied with 100
                 time(player);
 
                 int width = (int)Screen.getPrimary().getBounds().getWidth()/bands;

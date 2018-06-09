@@ -1,6 +1,5 @@
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -15,7 +14,6 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.util.List;
-import java.util.Spliterators;
 
 public class ControllerMenu {
     public Button BackButton, PlayButton, NextButton, RepeatButton, OpenButton;
@@ -100,7 +98,6 @@ public class ControllerMenu {
                 PlayButton.setText("Play");
             }
         }
-
         playVisual();
     }
     public void NextButtonAction() {
@@ -127,21 +124,28 @@ public class ControllerMenu {
         }
     }
     public void OpenButtonAction() {
-        MediaPlayer oldPlayer = player;
         configureFileChooser(fileChooser);
         fileList = fileChooser.showOpenMultipleDialog(Globals.primaryStage); //Opening file explorer and saving all selected the files in here
 
-        Globals.MusicList = fileList.size();
-
         if(fileList != null) {
+            if (isPlaying) { //this stops a song that is already playing if opening a new set of songs
+                player.stop();
+                isPlaying = false;
+                PlayButton.setText("Play");
+
+                MusicListView.getItems().clear();
+                ListViewButtonAction();
+                MusicListView.getSelectionModel().selectFirst();
+            }
+            for(int i = 0; i < fileList.size(); i++) {
+                MusicListView.getItems().add(fileList.get(i).getName());
+            }
+
+            Globals.MusicList = fileList.size();
+            currentSong = 0;
             if (fileList.get(currentSong).toURI() != null) {
                 audio = new Media(fileList.get(currentSong).toURI().toASCIIString());
 
-                if (isPlaying) {
-                    player.stop();
-                    isPlaying = false;
-                    PlayingLabel.setText("Play");
-                }
 
                 player = new MediaPlayer(audio);
                 PlayingLabel.setText(fileList.get(currentSong).getName());
@@ -161,22 +165,35 @@ public class ControllerMenu {
     public void ListViewButtonAction() {
         if(fileList != null) {//a toggle button
             if (!islistOpen) {
-                GUIAnchor.setTranslateY(-(GUIAnchor.getHeight() - 300)); // the list view is under the window so I just decrease its Y value
+                GUIAnchor.setTranslateY(-(GUIAnchor.getHeight() - 100)); // the list view is under the window so I just decrease its Y value
                 PlayingLabel.setTranslateY(-200);//hacked values that I can't be bothered with to calculate properly
 
                 islistOpen = true;
             } else {
-                GUIAnchor.setTranslateY(-(GUIAnchor.getHeight() - 500)); //returns it in its original place
-                PlayingLabel.setTranslateY(-(GUIAnchor.getHeight() - 500) - PlayedText.getScaleY());
+                GUIAnchor.setTranslateY(-(GUIAnchor.getHeight() - 300)); //returns it in its original place
+                PlayingLabel.setTranslateY(-(GUIAnchor.getHeight() - 300) - PlayedText.getScaleY());
                 islistOpen = false;
-            }
-            for(int i = 0; i < fileList.size(); i++) {
-                MusicListView.getItems().add(fileList.get(i).getName());
             }
         }
     }
     public void MusicListViewClickAction() {
+        player.stop();
+        currentSong = MusicListView.getSelectionModel().getSelectedIndex(); //gets the index from the cell you clicked on
 
+        audio = new Media(fileList.get(currentSong).toURI().toASCIIString());
+        if (isPlaying) { //this stops a song that is already playing if opening a new set of songs
+            player.stop();
+            isPlaying = false;
+            PlayButton.setText("Play");
+        }
+        player = new MediaPlayer(audio);
+        PlayingLabel.setText(fileList.get(currentSong).getName());
+
+
+        player.play();
+        playVisual();
+        isPlaying = true;
+        PlayButton.setText("Stop");
     }
 
     private void playVisual() {//currently the slider controls are in Draw class
@@ -187,9 +204,13 @@ public class ControllerMenu {
             player.setOnEndOfMedia(new Runnable() {
                 @Override
                 public void run() {
-                    player.stop();
                     isPlaying = false;
                     PlayButton.setText("Play");
+                    if(currentSong > Globals.MusicList) {
+                        NextButtonAction();
+                    } else {
+                        RepeatButtonAction();
+                    }
                 }
             });
         }
