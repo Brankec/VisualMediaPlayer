@@ -2,11 +2,11 @@ import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Slider;
 import javafx.scene.media.AudioSpectrumListener;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
+import javafx.util.Duration;
 
 import java.text.DecimalFormat;
 
@@ -47,7 +47,7 @@ public class Draw {
         });
         return 0;
     }
-    private void time(MediaPlayer player) {
+    private void time(MediaPlayer player) { //This is where the controls for the playback slider are and where it shows the duration
         //add listeners
         Globals.PlayedSlider.valueProperty().addListener(new InvalidationListener() { //listener for video jump using slider
             public void invalidated(Observable arg0) {
@@ -63,19 +63,14 @@ public class Draw {
                         Globals.PlayedSlider.setValue(player.getCurrentTime().toMillis()/player.getTotalDuration().toMillis()*100);
                     }
                 });
-
             }
         });
+        Duration currentTime = player.getCurrentTime();
+        Duration duration = player.getMedia().getDuration();
 
-        if(seconds <= 60) {
-            seconds = PlayedTime;
-            PlayedTime = 0.0;
-        } else {
-            minutes++;
-            seconds = 0;
-            PlayedTime = 0.0;
-        }
-        Globals.PlayedText.setText((int)minutes + ":" + (int)seconds);
+        Globals.PlayedText.setText(formatTime(currentTime));
+
+        Globals.DurationText.setText(formatTime(duration));
     }
     private void list(int select, int i, int x, int y, int w, int h) {
         switch(select) {
@@ -185,5 +180,52 @@ public class Draw {
         gc.setFill(Color.color(1, bandColor, 0));
         //gc.fillArc(x, 300, w, 300, 45, h, ArcType.ROUND);
         gc.arc(320, 10, 50, 50, 90, 180);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private static String formatTime(javafx.util.Duration elapsed) {
+        int intElapsed = (int)Math.floor(elapsed.toSeconds());
+        int elapsedHours = intElapsed / (60 * 60);
+        if (elapsedHours > 0) {
+            intElapsed -= elapsedHours * 60 * 60;
+        }
+        int elapsedMinutes = intElapsed / 60;
+        int elapsedSeconds = intElapsed - elapsedHours * 60 * 60
+                - elapsedMinutes * 60;
+
+
+        return String.format("%02d:%02d",
+                elapsedMinutes, elapsedSeconds);
     }
 }

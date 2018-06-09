@@ -65,13 +65,6 @@ public class ControllerMenu {
         GUIAnchor.setOpacity(0);
         PlayingLabel.setTranslateY(100);//it goes 100 pixels down from it's initial position
     }
-    public void VolumeSliderDragAction() {
-        System.out.println("y");
-
-        if(player != null) {
-            player.setVolume(VolumeSlider.getValue());
-        }
-    }
 
     public void BackButtonAction() {
         if(player != null && currentSong > 0) {
@@ -119,19 +112,18 @@ public class ControllerMenu {
         }
     }
     public void RepeatButtonAction() {
-        /*if(player != null) { not working properly yet. Reason: unknown.
+        if(player != null) {
             player.stop();
             player.play();
-            playing = false;
-            System.out.println(playing);
+            playing = true;
             PlayButton.setText("Stop");
-        }*/
+        }
     }
     public void OpenButtonAction() {
         MediaPlayer oldPlayer = player;
         configureFileChooser(fileChooser);
         //file = fileChooser.showOpenDialog(Globals.primaryStage);
-        fileList = fileChooser.showOpenMultipleDialog(Globals.primaryStage);
+        fileList = fileChooser.showOpenMultipleDialog(Globals.primaryStage); //Opening file explorer and saving all selected the files in here
 
         if(fileList != null) {
             if (fileList.get(currentSong).toURI() != null) {
