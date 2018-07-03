@@ -1,0 +1,23 @@
+#BackButton {
+    -fx-graphic: url("../../resources/volume.png");
+}
+
+.list-view{
+    -fx-background-color: transparent;
+}
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-font-size:15.0;
+    -fx-text-fill: white;
+}
+.list-cell:hover {
+    -fx-font-size:20.0;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+}
+.list-cell:selected {
+    -fx-font-size:20.0;
+    -fx-text-fill: white;
+    -fx-border-color: white;
+}
+

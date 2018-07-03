@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- =================================================================== -->
+    <!-- P R O J E C T -->
+    <!-- =================================================================== -->
+    <groupId>VisualMediaPlayer</groupId>
+    <artifactId>VisualMediaPlayer</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Testing: A Brankec Application</name>
+    <description>A Test Application Using Maven</description>
+
+    <!-- =================================================================== -->
+    <!-- L I C E N S E -->
+    <!-- =================================================================== -->
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <!-- =================================================================== -->
+    <!-- O R G A N I Z A T I O N -->
+    <!-- =================================================================== -->
+    <organization>
+        <name>Brankec Ltd.</name>
+        <url>https://github.com/Brankec</url>
+    </organization>
+
+    <!-- =================================================================== -->
+    <!-- D E V E L O P E R S -->
+    <!-- =================================================================== -->
+    <developers>
+        <developer>
+            <name>Branimir</name>
+            <organization>Brankec Ltd.</organization>
+            <organizationUrl>https://github.com/Brankec</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>committer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <!-- =================================================================== -->
+    <!-- P R O P E R T I E S -->
+    <!-- =================================================================== -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <!-- =================================================================== -->
+    <!-- D E P E N D E N C I E S -->
+    <!-- =================================================================== -->
+    <dependencies>
+    </dependencies>
+
+    <!-- =================================================================== -->
+    <!-- B U I L D -->
+    <!-- =================================================================== -->
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <mainClass>mainPackage.Main</mainClass>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
